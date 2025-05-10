@@ -1,0 +1,18 @@
+# PAPERBUDDY FINAL/netlify.toml
+
+[build]
+  command = ""
+  publish = "Frontend" # This SHOULD be respected
+  functions = "netlify/functions"
+
+[dev]
+  framework = "#static"  # Important: Tell Netlify it's static
+  publish = "Frontend"   # Reiterate for dev, sometimes helps
+  port = 8888            # The main port you access in browser (e.g., localhost:8888)
+  targetPort = 3001      # Port for the INTERNAL static server (change from default 3999)
+  functionsPort = 34568  # Port for the INTERNAL functions server (change if needed)
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat" # This proxies to the functions server internally
+  status = 200

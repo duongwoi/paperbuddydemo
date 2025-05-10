@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Past Papers - PaperBuddy</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Favicon -->
+    <!-- <link rel="icon" href="favicon.ico" type="image/x-icon"> -->
+
+    <!-- Firebase SDK (Compat version for simpler syntax in script.js) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <!-- <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script> -->
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <!-- Header content -->
+        <nav class="nav container">
+            <div class="nav__left">
+                <a href="index.html" class="nav__logo">PaperBuddy</a>
+                <div class="nav__menu" id="nav-menu">
+                    <ul class="nav__list">
+                        <li class="nav__item"> <a href="index.html" class="nav__link">Home</a> </li>
+                        <li class="nav__item"> <a href="dashboard.html" class="nav__link">Dashboard</a> </li>
+                        <li class="nav__item"> <a href="papers.html" class="nav__link active-link">Past Papers</a> </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="nav__buttons">
+                <!-- Logged Out State (Default) -->
+                <a href="#" class="nav__button-link" id="login-trigger-btn" data-open-modal="login-modal">Log in</a>
+                <a href="#" class="nav__button button button--primary" id="join-trigger-btn" data-open-modal="login-modal">Join now</a>
+
+                <!-- Logged In State (Initially Hidden by JS/CSS potentially) -->
+                <div id="user-info" class="nav__user-info" style="display: none;"> <!-- Hide initially -->
+                     <span class="nav__username" id="nav-username-display">User Name</span>
+                     <a href="#" class="nav__button-link" id="logout-btn">Log out</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main">
+        <div class="papers-layout">
+
+            <!-- == Sidebar (Filters) == -->
+            <aside class="filters-sidebar">
+                <h2 class="filter-title">FILTER</h2>
+                <form id="paper-filter-form" class="filters__form">
+                    <!-- Filter Groups -->
+                    <div class="filter-group"> <label for="filter-status" class="filter-label">Status</label> <select name="status" id="filter-status" class="filter-select"> <option value="">All Status</option> <option value="done">Done</option> <option value="not_done">Not Done</option> </select> </div>
+                    <div class="filter-group"> <label for="filter-year" class="filter-label">Year</label> <select name="year" id="filter-year" class="filter-select"> <option value="">All Years</option> <option value="2025">2025</option> <option value="2024">2024</option> <option value="2023">2023</option> </select> </div>
+                    <div class="filter-group"> <label for="filter-paper" class="filter-label">Paper no.</label> <select name="paper" id="filter-paper" class="filter-select"> <option value="">All Papers</option> <option value="1">Paper 1</option> <option value="2">Paper 2</option> <option value="3">Paper 3</option> <option value="4">Paper 4</option> </select> </div>
+                </form>
+                 <button type="button" id="apply-filters-btn" class="button button--primary" style="width: 100%; margin-top: 1.5rem;">Apply Filters</button>
+            </aside>
+
+            <!-- == Main Content Area (Papers) == -->
+            <section class="papers-content">
+                <h1 class="content-title" id="papers-main-title">Past Papers</h1>
+
+                <!-- <<<<< KHU VỰC NÀY SẼ ĐƯỢC JAVASCRIPT TẠO NỘI DUNG >>>>> -->
+                <div class="papers-list-area" id="papers-list-container">
+                    <!-- Nội dung bài thi (các ô paper-card) sẽ được JS chèn vào đây -->
+
+                    <!-- Thông báo khi không có kết quả -->
+                    <div id="no-papers-message" class="no-results-message" hidden>
+                        No past papers found matching your filters.
+                    </div>
+                </div>
+                 <!-- <<<<< HẾT KHU VỰC JAVASCRIPT TẠO NỘI DUNG >>>>> -->
+            </section>
+
+        </div> <!-- End .papers-layout -->
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+     <footer class="footer section">
+        <!-- Footer content -->
+        <div class="footer__container container grid">
+           <div class="footer__content"> <p class="footer__copy">© 2024 PaperBuddy. All rights reserved.</p> </div>
+           <div class="footer__links"> <a href="#privacy" class="footer__link">Privacy Policy</a> <a href="#terms" class="footer__link">Terms of Service</a> <a href="#contact" class="footer__link">Contact Us</a> </div>
+       </div>
+   </footer>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script src="script.js" defer></script>
+</body>
+</html>

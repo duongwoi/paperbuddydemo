@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Title sẽ được cập nhật bởi script.js -->
+    <title>Take Test - PaperBuddy</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Favicon -->
+    <!-- <link rel="icon" href="favicon.ico" type="image/x-icon"> -->
+
+    <!-- Firebase SDK (Compat version for simpler syntax in script.js) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script> <!-- Added Storage for file uploads -->
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <!-- Header content remains the same -->
+        <nav class="nav container">
+            <div class="nav__left">
+                <a href="index.html" class="nav__logo">PaperBuddy</a>
+                <div class="nav__menu" id="nav-menu">
+                    <ul class="nav__list">
+                        <li class="nav__item"> <a href="index.html" class="nav__link">Home</a> </li>
+                        <li class="nav__item"> <a href="dashboard.html" class="nav__link">Dashboard</a> </li>
+                        <li class="nav__item"> <a href="papers.html" class="nav__link active-link">Past Papers</a> </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="nav__buttons">
+                <!-- Logged Out State (Default) -->
+                <a href="#" class="nav__button-link" id="login-trigger-btn" data-open-modal="login-modal">Log in</a>
+                <a href="#" class="nav__button button button--primary" id="join-trigger-btn" data-open-modal="login-modal">Join now</a>
+
+                <!-- Logged In State (Initially Hidden by JS/CSS potentially) -->
+                <div id="user-info" class="nav__user-info" style="display: none;"> <!-- Hide initially -->
+                     <span class="nav__username" id="nav-username-display">User Name</span>
+                     <a href="#" class="nav__button-link" id="logout-btn">Log out</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main">
+
+        <!-- Section for Paper Identifier, Timer & Action Button (Side-by-Side Layout) -->
+        <section class="test-info-bar section" aria-labelledby="paper-code-heading">
+             <!-- Container limits width and uses flexbox -->
+             <div class="test-info-bar__container container">
+                <!-- Paper Identifier (Left Side) - Sẽ được cập nhật bởi script.js -->
+                <h1 id="paper-code-heading" class="test-identifier__code">Loading Paper...</h1> <!-- Placeholder -->
+
+                <!-- Timer and Button Group (Right Side) -->
+                <div class="timer-controls">
+                    <span class="timer__time" id="timer-display" aria-live="polite">00:00:00</span>
+                    <button type="button" class="button button--primary timer__button" id="timer-button" data-action="start">
+                        Take Exam
+                    </button>
+                </div>
+             </div>
+        </section>
+
+        <!-- Main Layout for Test Taking -->
+        <div class="test-layout">
+             <!-- Left Column: Paper Viewer -->
+             <div class="paper-viewer-container">
+                 <div class="paper-viewer paper-viewer--scrollable" id="paper-viewer-scroll">
+                     <h2 class="visually-hidden">Past Paper Content</h2>
+                     <!-- Images will be dynamically loaded by script.js based on paperId -->
+                     <p style="padding: 1rem; text-align:center;"><i>Paper content loads here...</i></p>
+                 </div>
+             </div>
+             <!-- Right Column: Answer Area -->
+             <aside class="answer-area-container">
+                <div class="answer-sections">
+                    <section class="answer-section draft-paper-area" aria-labelledby="draft-heading">
+                        <h2 id="draft-heading" class="answer-section__title">Draft Paper</h2>
+                        <textarea id="draft-textarea" class="answer-textarea answer-textarea--draft" placeholder="Use this space for rough work or drafting..."></textarea>
+                    </section>
+                    <section class="answer-section main-answer-area" aria-labelledby="answer-heading">
+                         <h2 id="answer-heading" class="answer-section__title">Your Answer</h2>
+                        <textarea id="answer-textarea" class="answer-textarea answer-textarea--main" placeholder="Start the exam to type or upload." disabled></textarea> <!-- Disabled initially -->
+                    </section>
+                </div>
+             </aside>
+        </div> <!-- End .test-layout -->
+
+        <!-- Alternative Upload Section -->
+        <section class="upload-alternative section" aria-labelledby="upload-heading">
+             <div class="upload-alternative__container container">
+                <p class="upload-alternative__text">or you can</p>
+                 <div class="upload-alternative__icon" aria-hidden="true">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-document"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                 </div>
+                 <h3 id="upload-heading" class="upload-alternative__title">upload document</h3>
+                 <div class="file-upload-area">
+                    <input type="file" id="file-upload-input" class="file-upload-input" accept=".pdf,.doc,.docx,.txt,.jpeg,.jpg,.png" aria-labelledby="upload-heading" disabled> <!-- Added image types, disabled initially -->
+                    <label for="file-upload-input" class="file-upload-label">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-upload"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        <span class="file-upload-text">Drag file here or click to select</span>
+                    </label>
+                    <div id="file-upload-filename" class="file-upload-filename" aria-live="polite"></div>
+                 </div>
+             </div>
+        </section>
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+     <footer class="footer section">
+        <div class="footer__container container grid">
+            <div class="footer__content"> <p class="footer__copy">© 2024 PaperBuddy. All rights reserved.</p> </div>
+            <div class="footer__links"> <a href="#privacy" class="footer__link">Privacy Policy</a> <a href="#terms" class="footer__link">Terms of Service</a> <a href="#contact" class="footer__link">Contact Us</a> </div>
+        </div>
+   </footer>
+
+    <!-- ===== SUBMIT CONFIRMATION MODAL ===== -->
+    <div class="modal" id="confirm-submit-modal" role="dialog" aria-labelledby="confirm-modal-title" aria-modal="true" hidden>
+        <div class="modal__overlay" tabindex="-1" data-close-modal></div>
+        <div class="modal__content">
+             <button class="modal__close-btn" aria-label="Close" data-close-modal>
+                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+             </button>
+            <h3 id="confirm-modal-title" class="modal__title">Confirm Submission</h3>
+            <p class="modal__text">Are you sure you want to submit your attempt?</p>
+            <div class="modal__buttons">
+                <button type="button" class="button button--secondary" id="cancel-submit-btn" data-close-modal>Cancel</button>
+                <button type="button" class="button button--primary" id="confirm-submit-btn">Confirm Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script src="script.js" defer></script>
+</body>
+</html>

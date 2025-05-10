@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Title sẽ được cập nhật bởi script.js -->
+    <title>Result - PaperBuddy</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Favicon -->
+    <!-- <link rel="icon" href="favicon.ico" type="image/x-icon"> -->
+    <!-- jsPDF Library - Can be kept if you plan PDF generation for feedback/outline later -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- Firebase SDK (Compat version for simpler syntax in script.js) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <!-- <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script> -->
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <nav class="nav container">
+             <div class="nav__left">
+                <a href="index.html" class="nav__logo">PaperBuddy</a>
+                <div class="nav__menu" id="nav-menu">
+                    <ul class="nav__list">
+                        <li class="nav__item"> <a href="index.html" class="nav__link">Home</a> </li>
+                        <li class="nav__item"> <a href="dashboard.html" class="nav__link">Dashboard</a> </li>
+                        <li class="nav__item"> <a href="papers.html" class="nav__link active-link">Past Papers</a> </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="nav__buttons">
+                <!-- Logged Out State (Default) -->
+                <a href="#" class="nav__button-link" id="login-trigger-btn" data-open-modal="login-modal">Log in</a>
+                <a href="#" class="nav__button button button--primary" id="join-trigger-btn" data-open-modal="login-modal">Join now</a>
+
+                <!-- Logged In State (Initially Hidden by JS/CSS potentially) -->
+                <div id="user-info" class="nav__user-info" style="display: none;"> <!-- Hide initially -->
+                     <span class="nav__username" id="nav-username-display">User Name</span>
+                     <a href="#" class="nav__button-link" id="logout-btn">Log out</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main">
+
+        <!-- Section for Paper Identifier -->
+        <section class="result-identifier section" aria-labelledby="result-paper-code">
+            <div class="result-identifier__container container">
+                 <!-- Sẽ được cập nhật bởi script.js -->
+                <h1 id="result-paper-code" class="result-identifier__code">Loading Result...</h1> <!-- Placeholder -->
+            </div>
+        </section>
+
+        <!-- Section for Result Summary & Actions -->
+        <section class="result-summary section" aria-labelledby="result-summary-heading">
+            <div class="result-summary__container container">
+                <h2 id="result-summary-heading" class="visually-hidden">Attempt Result Summary and Actions</h2>
+
+                <!-- Top Row: Result Blocks -->
+                <div class="result-blocks__row result-blocks__row--top">
+                    <!-- Block 1: Grade/Score Details -->
+                    <article class="result-block result-block--grade-details" aria-labelledby="grade-details-heading">
+                        <h3 id="grade-details-heading" class="visually-hidden">Overall Performance</h3>
+                        <div class="grade-details-content">
+                            <p class="detail-item">
+                                <span class="detail-label">Grade:</span>
+                                <!-- Updated by script.js -->
+                                <span class="detail-value detail-value--grade" id="result-grade">--</span>
+                            </p>
+                            <p class="detail-item">
+                                <span class="detail-label">Duration:</span>
+                                <!-- Updated by script.js -->
+                                <span class="detail-value" id="result-duration">--:--:--</span>
+                            </p>
+                            <p class="detail-item">
+                                <span class="detail-label">Raw Score:</span>
+                                <!-- Updated by script.js -->
+                                <span class="detail-value" id="result-raw-score">-- / --</span>
+                            </p>
+                        </div>
+                    </article>
+
+                    <!-- Block 2: Section A Summary -->
+                    <article class="result-block result-block--section-summary" aria-labelledby="section-a-heading">
+                        <h3 id="section-a-heading" class="result-block__title">Section A</h3>
+                         <!-- Updated by script.js -->
+                         <p class="section-score-summary" id="result-section-a">-- / --</p>
+                    </article>
+
+                    <!-- Block 3: Section B Summary -->
+                    <article class="result-block result-block--section-summary" aria-labelledby="section-b-heading">
+                        <h3 id="section-b-heading" class="result-block__title">Section B</h3>
+                         <!-- Updated by script.js -->
+                         <p class="section-score-summary" id="result-section-b">-- / --</p>
+                    </article>
+
+                    <!-- Block 4: Section C Summary -->
+                    <article class="result-block result-block--section-summary" aria-labelledby="section-c-heading">
+                        <h3 id="section-c-heading" class="result-block__title">Section C</h3>
+                         <!-- Updated by script.js -->
+                         <p class="section-score-summary" id="result-section-c">-- / --</p>
+                    </article>
+                </div>
+
+                <!-- Bottom Row: Action Buttons -->
+                <div class="result-actions__row">
+                    <a href="#" class="button result-action-button" id="download-feedback-btn">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="button-icon" viewBox="0 0 16 16"> <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/> <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/> </svg>
+                        Download detailed feedback
+                    </a>
+                    <a href="#" class="button result-action-button" id="download-outline-btn">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="button-icon" viewBox="0 0 16 16"> <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/> <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/> </svg>
+                        Download outline
+                    </a>
+                    <button type="button" class="button result-action-button result-action-button--delete" id="delete-attempt-btn">
+                        DELETE ATTEMPT
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+     <footer class="footer section">
+        <div class="footer__container container grid">
+           <div class="footer__content"> <p class="footer__copy">© 2024 PaperBuddy. All rights reserved.</p> </div>
+           <div class="footer__links"> <a href="#privacy" class="footer__link">Privacy Policy</a> <a href="#terms" class="footer__link">Terms of Service</a> <a href="#contact" class="footer__link">Contact Us</a> </div>
+       </div>
+   </footer>
+
+    <!-- ===== DELETE CONFIRMATION MODAL ===== -->
+    <div class="modal" id="confirm-delete-modal" role="dialog" aria-labelledby="confirm-delete-title" aria-modal="true" hidden>
+        <div class="modal__overlay" tabindex="-1" data-close-modal></div>
+        <div class="modal__content">
+            <button class="modal__close-btn" aria-label="Close" data-close-modal>
+                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+             </button>
+            <h3 id="confirm-delete-title" class="modal__title">Confirm Deletion</h3>
+            <p class="modal__text">Are you sure you want to delete this attempt? This action cannot be undone.</p>
+            <div class="modal__buttons">
+                <button type="button" class="button button--secondary" id="cancel-delete-btn" data-close-modal>Cancel</button>
+                <button type="button" class="button button--primary result-action-button--delete" id="confirm-delete-action-btn">Confirm Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script src="script.js" defer></script>
+</body>
+</html>

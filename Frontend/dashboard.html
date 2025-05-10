@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en"> <!-- Ensure lang="en" -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - PaperBuddy</title>
+    <!-- Link to shared CSS file -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Favicon (optional) -->
+    <!-- <link rel="icon" href="favicon.ico" type="image/x-icon"> -->
+
+    <!-- Firebase SDK (Compat version for simpler syntax in script.js) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <!-- <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script> -->
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <nav class="nav container">
+            <!-- Left part: Logo + Menu Links -->
+            <div class="nav__left">
+                <a href="index.html" class="nav__logo">PaperBuddy</a>
+                <div class="nav__menu" id="nav-menu">
+                    <ul class="nav__list">
+                        <li class="nav__item">
+                            <a href="index.html" class="nav__link">Home</a>
+                        </li>
+                        <li class="nav__item">
+                            <!-- Active link for Dashboard -->
+                            <a href="dashboard.html" class="nav__link active-link">Dashboard</a>
+                        </li>
+                        <li class="nav__item">
+                            <a href="papers.html" class="nav__link">Past Papers</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Right part: Action Buttons (Consider changing this when logged in) -->
+            <div class="nav__buttons">
+                <!-- Logged Out State (Default) -->
+                <a href="#" class="nav__button-link" id="login-trigger-btn" data-open-modal="login-modal">Log in</a>
+                <a href="#" class="nav__button button button--primary" id="join-trigger-btn" data-open-modal="login-modal">Join now</a>
+
+                <!-- Logged In State (Initially Hidden by JS/CSS potentially) -->
+                <div id="user-info" class="nav__user-info" style="display: none;"> <!-- Hide initially -->
+                     <span class="nav__username" id="nav-username-display">User Name</span>
+                     <a href="#" class="nav__button-link" id="logout-btn">Log out</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main">
+
+        <!-- ----- Welcome Section ----- -->
+        <section class="welcome section">
+            <!-- Container controls width, CSS will center text inside -->
+            <div class="welcome__container container">
+                <!-- User name will be updated by script.js -->
+                <h1 class="welcome__title">Hi, User</h1> <!-- Placeholder -->
+                <p class="welcome__subtitle">Welcome back to PaperBuddy.</p>
+            </div>
+        </section>
+
+        <!-- ----- My Subjects Section ----- -->
+        <section class="my-subjects section" id="my-subjects">
+            <div class="my-subjects__container container">
+                <!-- Section Header -->
+                <div class="my-subjects__header">
+                    <h2 class="section__title">My subjects</h2>
+                    <button class="button button--secondary button--small" id="edit-subjects-btn" aria-haspopup="dialog" aria-controls="subject-modal">
+                        + Add/edit subjects
+                    </button>
+                </div>
+
+                <!-- Subjects List Wrapper - JS will populate this -->
+                <div class="subjects-list" id="subjects-list-wrapper">
+                    <!-- Header Row (for larger screens) -->
+                    <div class="subjects-list__header" role="rowheader">
+                        <span class="subjects-list__col-header">Subject</span>
+                        <span class="subjects-list__col-header">Past Papers</span>
+                        <span class="subjects-list__col-header">Predicted grade</span>
+                        <span class="subjects-list__col-header" aria-label="Actions"></span>
+                    </div>
+
+                    <!-- Subject items will be dynamically added here by JS -->
+                    <!-- Example structure (JS will create this):
+                    <article class="subjects-list__item" role="row" data-subject-id="economics-9708">
+                        <div class="subjects-list__cell" data-label="Subject">Economics (9708)</div>
+                        <div class="subjects-list__cell" data-label="Past Papers">
+                            <div class="progress-bar" aria-label="Progress for Economics">
+                                <div class="progress-bar__inner" style="width: 75%;" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="subjects-list__cell" data-label="Predicted grade">A</div>
+                        <div class="subjects-list__cell subjects-list__cell--action">
+                            <a href="papers.html?subject=economics-9708" class="subjects-list__link" aria-label="View Economics papers">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            </a>
+                        </div>
+                    </article>
+                     -->
+                </div>
+                <!-- Message displayed if no subjects are selected -->
+                <div id="no-subjects-message" class="no-results-message" hidden>
+                    You haven't added any subjects yet. Click "+ Add/edit subjects" to get started.
+                </div>
+            </div>
+        </section>
+        <!-- Add other dashboard sections if needed -->
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer section">
+        <!-- Footer content remains the same as index.html -->
+        <div class="footer__container container grid">
+           <div class="footer__content"> <p class="footer__copy">© 2024 PaperBuddy. All rights reserved.</p> </div>
+           <div class="footer__links"> <a href="#privacy" class="footer__link">Privacy Policy</a> <a href="#terms" class="footer__link">Terms of Service</a> <a href="#contact" class="footer__link">Contact Us</a> </div>
+       </div>
+    </footer>
+
+    <!-- ===== MODAL for Add/Edit Subjects ===== -->
+    <div class="modal" id="subject-modal" role="dialog" aria-labelledby="subject-modal-title" aria-modal="true" hidden>
+        <div class="modal__overlay" tabindex="-1" data-close-modal></div>
+        <div class="modal__content">
+            <button class="modal__close-btn" aria-label="Close" data-close-modal>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+            <h3 id="subject-modal-title" class="modal__title">Select subjects</h3>
+            <!-- Form to handle subject selection -->
+            <form id="subject-selection-form" class="modal__form">
+                <ul class="modal__subject-list">
+                    <li class="modal__subject-item">
+                        <!-- Store subject label in data attribute for easier JS access -->
+                        <input type="checkbox" id="modal-subject-econ" name="subjects" value="economics-9708" data-label="Economics (9708)">
+                        <label for="modal-subject-econ">
+                           <span>Economics (9708)</span>
+                        </label>
+                    </li>
+                    <li class="modal__subject-item">
+                        <input type="checkbox" id="modal-subject-biz" name="subjects" value="business-9609" data-label="Business (9609)">
+                         <label for="modal-subject-biz">
+                            <span>Business (9609)</span>
+                         </label>
+                    </li>
+                    <!-- Add more available subjects here -->
+                    <!-- <li class="modal__subject-item">
+                        <input type="checkbox" id="modal-subject-math" name="subjects" value="mathematics-9709" data-label="Mathematics (9709)">
+                        <label for="modal-subject-math"><span>Mathematics (9709)</span></label>
+                    </li> -->
+                </ul>
+                <button type="submit" class="button button--primary modal__save-btn">Save Subjects</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script src="script.js" defer></script>
+</body>
+</html>

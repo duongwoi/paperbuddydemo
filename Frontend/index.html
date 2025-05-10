@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PaperBuddy - A-Level Online Practice</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- <link rel="icon" href="favicon.ico" type="image/x-icon"> -->
+
+    <!-- Firebase SDK (Compat version for simpler syntax in script.js) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <!-- <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script> -->
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <nav class="nav container">
+            <div class="nav__left">
+                <a href="index.html" class="nav__logo">PaperBuddy</a>
+                <div class="nav__menu" id="nav-menu">
+                    <ul class="nav__list">
+                        <li class="nav__item">
+                            <a href="index.html" class="nav__link active-link">Home</a>
+                        </li>
+                        <li class="nav__item">
+                            <a href="dashboard.html" class="nav__link">Dashboard</a>
+                        </li>
+                        <li class="nav__item">
+                            <a href="papers.html" class="nav__link">Past Papers</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="nav__buttons">
+                <!-- Logged Out State (Default) -->
+                <a href="#" class="nav__button-link" id="login-trigger-btn" data-open-modal="login-modal">Log in</a>
+                <a href="#" class="nav__button button button--primary" id="join-trigger-btn" data-open-modal="login-modal">Join now</a>
+
+                <!-- Logged In State (Initially Hidden by JS/CSS potentially) -->
+                <div id="user-info" class="nav__user-info" style="display: none;"> <!-- Hide initially -->
+                     <span class="nav__username" id="nav-username-display">User Name</span>
+                     <a href="#" class="nav__button-link" id="logout-btn">Log out</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main">
+        <!-- ----- HERO Section ----- -->
+        <section class="hero section" id="hero">
+            <div class="hero__container container grid">
+                <!-- Hero Text Data -->
+                <div class="hero__data">
+                    <h1 class="hero__title">PaperBuddy</h1>
+                    <p class="hero__description">
+                        Practice A-level past papers, receive instant AI-powered essay scoring and feedback, and track your improvement.
+                    </p>
+                    <!-- Search Bar MOVED FROM here -->
+                </div>
+
+                <!-- Hero Image -->
+                <div class="hero__image-container">
+                     <img src="images/image1.png" alt="Example of AI scoring feedback on an A-Level paper" class="hero__img" loading="lazy">
+                </div>
+
+                <!-- Search Bar MOVED TO here (Below Image) -->
+                <form class="hero__search-form" action="papers.html" method="get">
+                    <input type="search" name="query" class="hero__search-input" placeholder="Mark my paper..." aria-label="Search past papers">
+                    <button type="submit" class="button button--primary hero__search-button">Explore Papers</button>
+                </form>
+
+            </div>
+        </section>
+
+         <!-- ----- HOW IT WORKS Section ----- -->
+       <section class="how-it-works section" id="how-it-works">
+            <h2 class="section__title">How it works</h2>
+            <div class="how-it-works__container container grid">
+                 <article class="how-it-works__card"> <img src="images/placeholder-practice-icon.svg" alt="Practice Icon" class="how-it-works__img" loading="lazy"> <h3 class="how-it-works__title">In-app past paper practice</h3> <p class="how-it-works__description"> Access and practice a wide range of A-Level past papers directly within the app. </p> </article>
+                 <article class="how-it-works__card"> <img src="images/placeholder-ai-grader-icon.svg" alt="AI Grading Icon" class="how-it-works__img" loading="lazy"> <h3 class="how-it-works__title">AI grading and feedback</h3> <p class="how-it-works__description"> Receive instant, detailed feedback and scores on your essay answers powered by AI. </p> </article>
+                 <article class="how-it-works__card"> <img src="images/placeholder-outline-icon.svg" alt="Outline Generator Icon" class="how-it-works__img" loading="lazy"> <h3 class="how-it-works__title">Outline generator</h3> <p class="how-it-works__description"> Generate structured outlines to help you plan and write more effective essays. </p> </article>
+            </div>
+        </section>
+
+        <!-- ----- SUBJECTS AVAILABLE Section ----- -->
+        <section class="subjects section" id="subjects">
+           <h2 class="section__title">Subjects available</h2>
+           <div class="subjects__container container">
+               <div class="subjects__list">
+                   <a href="papers.html?subject=business-9609" class="subjects__item"> A-Level Business (9609) </a>
+                   <a href="papers.html?subject=economics-9708" class="subjects__item"> A-Level Economics (9708) </a>
+               </div>
+           </div>
+       </section>
+
+       <!-- ----- FINAL CALL TO ACTION Section ----- -->
+       <section class="cta section">
+           <div class="cta__container container">
+                <a href="papers.html" class="button button--primary button--lg">Practice now</a>
+           </div>
+       </section>
+        <!-- ===== LOGIN/SIGNUP MODAL (TARGETED UPDATE) ===== -->
+        <div class="modal" id="login-modal" role="dialog" aria-labelledby="login-modal-title" aria-modal="true" hidden>
+            <div class="modal__overlay" tabindex="-1" data-close-modal></div>
+            <div class="modal__content">
+                <button class="modal__close-btn" aria-label="Close" data-close-modal>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+                <h3 id="login-modal-title" class="modal__title">Log In / Sign Up</h3> <!-- Original title -->
+                <form id="login-form" class="modal__form">
+                    <!-- START OF NEW ADDITION: Tabs -->
+                    <div class="modal-tabs">
+                        <button type="button" class="modal-tab-button active" data-form-mode="login">Log In</button>
+                        <button type="button" class="modal-tab-button" data-form-mode="register">Sign Up</button>
+                    </div>
+                    <!-- END OF NEW ADDITION: Tabs -->
+
+                    <!-- START OF NEW ADDITION: Name Field -->
+                    <div class="login-form__group" id="name-form-group" style="display: none;"> <!-- Hidden by default -->
+                        <label for="login-name" class="login-form__label">Name</label>
+                        <input type="text" id="login-name" class="login-form__input" autocomplete="name">
+                    </div>
+                    <!-- END OF NEW ADDITION: Name Field -->
+
+                    <div class="login-form__group">
+                        <label for="login-email" class="login-form__label">Email</label> <!-- Changed from login-username to login-email for consistency -->
+                        <input type="email" id="login-email" class="login-form__input" required autocomplete="email"> <!-- Changed from login-username -->
+                    </div>
+                    <div class="login-form__group">
+                        <label for="login-password" class="login-form__label">Password</label>
+                        <input type="password" id="login-password" class="login-form__input" required autocomplete="current-password">
+                    </div>
+                    <p id="login-error-message" class="login-error" hidden></p> <!-- For error messages -->
+                    <button type="submit" class="button button--primary modal__save-btn" id="auth-submit-button">Log In</button> <!-- ID added, text changed by JS -->
+                </form>
+                <p class="modal__text" style="font-size: var(--small-font-size); text-align: center; margin-top: 1rem;" id="auth-mode-message">
+                    Enter your email and password to log in. New? Switch to Sign Up. <!-- ID added, text changed by JS -->
+                </p>
+            </div>
+        </div>
+        <!-- ===== END LOGIN/SIGNUP MODAL ===== -->
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer section">
+       <div class="footer__container container grid">
+           <div class="footer__content"> <p class="footer__copy">© 2024 PaperBuddy. All rights reserved.</p> </div>
+           <div class="footer__links"> <a href="#privacy" class="footer__link">Privacy Policy</a> <a href="#terms" class="footer__link">Terms of Service</a> <a href="#contact" class="footer__link">Contact Us</a> </div>
+       </div>
+   </footer>
+
+    <!-- Global User Message Area -->
+    <div id="user-message-area"></div>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script src="script.js" defer></script>
+</body>
+</html>

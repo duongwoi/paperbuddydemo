@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Title sẽ được cập nhật bởi script.js -->
+    <title>Attempt Details - PaperBuddy</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Favicon -->
+    <!-- <link rel="icon" href="favicon.ico" type="image/x-icon"> -->
+
+    <!-- Firebase SDK (Compat version for simpler syntax in script.js) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <!-- <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script> -->
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+        <!-- Header content -->
+        <nav class="nav container">
+            <div class="nav__left">
+                <a href="index.html" class="nav__logo">PaperBuddy</a>
+                <div class="nav__menu" id="nav-menu">
+                    <ul class="nav__list">
+                        <li class="nav__item"> <a href="index.html" class="nav__link">Home</a> </li>
+                        <li class="nav__item"> <a href="dashboard.html" class="nav__link">Dashboard</a> </li>
+                        <li class="nav__item"> <a href="papers.html" class="nav__link active-link">Past Papers</a> </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="nav__buttons">
+                <!-- Logged Out State (Default) -->
+                <a href="#" class="nav__button-link" id="login-trigger-btn" data-open-modal="login-modal">Log in</a>
+                <a href="#" class="nav__button button button--primary" id="join-trigger-btn" data-open-modal="login-modal">Join now</a>
+
+                <!-- Logged In State (Initially Hidden by JS/CSS potentially) -->
+                <div id="user-info" class="nav__user-info" style="display: none;"> <!-- Hide initially -->
+                     <span class="nav__username" id="nav-username-display">User Name</span>
+                     <a href="#" class="nav__button-link" id="logout-btn">Log out</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main">
+
+        <!-- Section for Paper Identifier -->
+        <section class="attempt-identifier section" aria-labelledby="paper-code">
+            <div class="attempt-identifier__container container">
+                <!-- Sẽ được cập nhật bởi script.js -->
+                <h1 id="paper-code" class="attempt-identifier__code">Loading Attempt...</h1> <!-- Placeholder -->
+            </div>
+        </section>
+
+        <!-- Main Layout for Attempt Details -->
+        <div class="attempt-layout">
+
+            <!-- == Left Column: Content Viewer == -->
+            <div class="paper-viewer-container">
+                <div class="paper-viewer" id="paper-viewer-content">
+                    <h2 class="visually-hidden">Content Viewer</h2>
+                    <!-- Past Paper View -->
+                    <div id="past-paper-view">
+                        <p style="padding: 1rem; text-align: center;"><i>Past paper content loads here...</i></p>
+                        <!-- Images will be dynamically loaded by script.js if available -->
+                    </div>
+                    <!-- Feedback View -->
+                    <div id="feedback-view" hidden style="padding: 1rem;">
+                         <p><i>Previous attempt & feedback content loads here...</i></p>
+                         <!-- Content dynamically inserted by script.js -->
+                    </div>
+                    <!-- Outline View -->
+                    <div id="outline-view" hidden style="padding: 1rem;">
+                         <p><i>Outline content loads here...</i></p>
+                         <!-- Content (likely a <pre> tag) dynamically inserted by script.js -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- == Right Column: Details & Actions == -->
+            <aside class="attempt-details-sidebar">
+                <!-- Grade Summary -->
+                <section class="grade-summary" aria-labelledby="grade-heading">
+                    <h2 id="grade-heading" class="visually-hidden">Attempt Summary</h2>
+                     <div class="detail-item">
+                        <span class="detail-label">Grade:</span>
+                        <!-- Updated by script.js -->
+                        <span class="detail-value detail-value--grade" id="attempt-grade">--</span>
+                    </div>
+                     <div class="detail-item">
+                        <span class="detail-label">Duration:</span>
+                        <!-- Updated by script.js -->
+                        <span class="detail-value" id="attempt-duration">--:--:--</span>
+                    </div>
+                     <div class="detail-item">
+                        <span class="detail-label">Raw Score:</span>
+                        <!-- Updated by script.js -->
+                        <span class="detail-value" id="attempt-raw-score">-- / --</span>
+                    </div>
+                </section>
+
+                <!-- Action Buttons to switch view -->
+                 <a href="#view-paper" class="button button--secondary attempt-action-button" id="view-paper-btn" role="button" aria-current="page">
+                    Past paper
+                 </a>
+                 <a href="#view-feedback" class="button button--secondary attempt-action-button" id="view-feedback-btn" role="button">
+                    Previous attempt & feedback
+                 </a>
+                 <a href="#view-outline" class="button button--secondary attempt-action-button" id="view-outline-btn" role="button">
+                    Outline
+                 </a>
+
+                <!-- Retake Button -->
+                <a href="test.html?paperId=unknown-paper" class="button button--primary retake-button" role="button">
+                    Retake
+                </a>
+            </aside>
+
+        </div> <!-- End .attempt-layout -->
+    </main>
+
+    <!-- ===== RETAKE CONFIRMATION MODAL ===== -->
+    <div class="modal" id="confirm-retake-modal" role="dialog" aria-labelledby="confirm-retake-title" aria-modal="true" hidden>
+        <div class="modal__overlay" tabindex="-1" data-close-modal></div>
+        <div class="modal__content">
+            <button class="modal__close-btn" aria-label="Close" data-close-modal>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+            <h3 id="confirm-retake-title" class="modal__title">Confirm Retake</h3>
+            <p class="modal__text">Are you sure you want to retake this paper? This will start a new test session.</p>
+            <div class="modal__buttons">
+                <button type="button" class="button button--secondary" id="cancel-retake-btn" data-close-modal>Cancel</button>
+                <button type="button" class="button button--primary" id="confirm-retake-action-btn">Confirm Retake</button>
+            </div>
+        </div>
+    </div>
+    <!-- ===== END RETAKE MODAL ===== -->
+
+
+    <!-- ===== FOOTER ===== -->
+     <footer class="footer section">
+        <div class="footer__container container grid">
+           <div class="footer__content"> <p class="footer__copy">© 2024 PaperBuddy. All rights reserved.</p> </div>
+           <div class="footer__links"> <a href="#privacy" class="footer__link">Privacy Policy</a> <a href="#terms" class="footer__link">Terms of Service</a> <a href="#contact" class="footer__link">Contact Us</a> </div>
+       </div>
+   </footer>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script src="script.js" defer></script>
+</body>
+</html>
